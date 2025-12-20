@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Verbs valencians</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 5px; margin: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; }
         .container { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 750px; }
         
         .header { text-align: center; border-bottom: 2px solid #007bff; margin-bottom: 10px; padding-bottom: 5px; }
@@ -57,14 +57,14 @@
     </div>
     <div id="inputs-area"></div>
     <div class="botons">
-        <button id="btn-check" class="btn-check" onclick="verificar()">Comprovar</button>
-        <button id="btn-sol" class="btn-sol" onclick="mostrarSolucions()">Mostrar solucions</button>
+        <button id="btn-check" class="btn-check" onclick="verificar()">Comprova</button>
+        <button id="btn-sol" class="btn-sol" onclick="mostrarSolucions()">Mostra solucions</button>
         <button id="btn-next" class="btn-next" onclick="següent()">Següent</button>
     </div>
     <div id="feedback-global"></div>
 
     <div class="selector-wrapper">
-        <span class="titol-selector">Tria els temps que vols repassar:</span>
+        <span class="titol-selector">Trieu els temps que vulgueu repassar:</span>
         <div class="grid-categories">
             <div class="col-categoria">
                 <label class="header-categoria"><input type="checkbox" id="master-simples" checked onclick="toggleGrup(this, 'cat-simples')"> Simples</label>
@@ -75,11 +75,17 @@
                 <div id="cat-compostos"></div>
             </div>
             <div class="col-categoria">
-                <label class="header-categoria"><input type="checkbox" id="master-no-personals" checked onclick="toggleGrup(this, 'cat-no-personals')"> No Pers.</label>
+                <label class="header-categoria"><input type="checkbox" id="master-no-personals" checked onclick="toggleGrup(this, 'cat-no-personals')"> Formes no personals</label>
                 <div id="cat-no-personals"></div>
             </div>
         </div>
     </div>
+</div>
+
+<div style="text-align: center; margin-top: 20px; padding-bottom: 20px; width: 100%;">
+    <a href="mailto:verbsvalencians@gmail.com" style="text-decoration: none; color: #666; font-size: 0.8em; font-family: 'Segoe UI', Tahoma, sans-serif;">
+        verbsvalencians@gmail.com
+    </a>
 </div>
 
 <script>
@@ -4844,7 +4850,7 @@ const base = [
         const checkboxes = document.querySelectorAll('.opcio-temps input:checked');
         const seleccionats = Array.from(checkboxes).map(cb => cb.value.toLowerCase());
         if (seleccionats.length === 0) {
-            alert("Selecciona almenys un temps verbal.");
+            alert("Seleccioneu almenys un temps verbal.");
             return;
         }
         const vObj = base[Math.floor(Math.random() * base.length)];
