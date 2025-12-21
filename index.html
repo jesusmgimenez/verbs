@@ -72,7 +72,45 @@
         .header-categoria { display: flex; align-items: center; justify-content: flex-start; gap: 5px; font-size: 0.7em; color: #666; text-transform: uppercase; border-bottom: 1px solid #eef2f7; padding-bottom: 3px; margin-bottom: 6px; font-weight: bold; cursor: pointer; }
         .opcio-temps { display: flex; align-items: center; justify-content: flex-start; gap: 4px; cursor: pointer; color: #444; font-size: 0.7em; margin-bottom: 3px; line-height: 1; text-align: left; }
         .opcio-temps input, .header-categoria input { margin: 0; width: 12px; height: 12px; flex: none; }
-    </style>
+    
+	/* Ajustos per a pantalles estretes (Mòbils) */
+@media (max-width: 600px) {
+    .fila {
+        flex-direction: column; /* Posem els elements un davall de l'altre */
+        align-items: flex-start;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .label-forma {
+        width: 100%;
+        text-align: left; /* Aliniat a l'esquerra en mòbils */
+        margin-bottom: 4px;
+        font-size: 0.7em;
+    }
+
+    input {
+        width: 100%; /* L'input ocupa tota l'amplària */
+        box-sizing: border-box; /* Perquè el padding no el faça més gran */
+    }
+
+    .sol-col {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 5px; /* Espai entre l'input i la solució */
+        font-size: 0.85em;
+    }
+
+    .grid-categories {
+        grid-template-columns: 1fr; /* El selector de temps passa a 1 columna */
+    }
+    
+    .botons {
+        flex-wrap: wrap; /* Els botons es poden posar en dues files si no caben */
+    }
+}
+	
+	</style>
 	
 </head>
 <body>
