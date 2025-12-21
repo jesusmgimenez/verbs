@@ -2,9 +2,17 @@
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Verbs valencians</title>
 <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; }
+        body {
+		font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; 
+		-webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+		
+		}
         .container { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 750px; }
         
         .header { text-align: center; border-bottom: 2px solid #007bff; margin-bottom: 10px; padding-bottom: 5px; }
@@ -41,7 +49,9 @@
             font-weight: bold; 
             display: none; 
             font-size: 0.85em; 
-            line-height: 1.4; 
+            line-height: 1.4;
+			word-wrap: break-word; /* Evita que el texto largo desborde en pantallas estrechas */
+			overflow-wrap: break-word;			
         }
         
         .ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
@@ -133,7 +143,7 @@
         return res;
     }
 
-	const base = [
+const base = [
     {
         n: "Abraçar",
         t: {
@@ -4784,7 +4794,7 @@
             "Observacions": p("També pot presentar les formes següents:\n– En l'àmbit general: passat perifràstic: 2 vares véncer, 4 vàrem véncer, 5 vàreu véncer, 6 varen véncer; passat anterior perifràstic: 2 vares haver vençut, 4 vàrem haver vençut, 5 vàreu haver vençut, 6 varen haver vençut; present de subjuntiu: 4 vençam, 5 vençau; imperatiu: 4 vençam, 5 vençau.\n– En el valencià septentrional: present d'indicatiu: 1 venço.")
         }
     },
-    ];
+];
 
     const labelsPersonals = ["jo", "tu", "ell / ella / vosté", "nosaltres", "vosaltres", "ells / elles / vostés"];
     const labelsParticipi = ["Masc. Sing.", "Fem. Sing.", "Masc. Plur.", "Fem. Plur."];
