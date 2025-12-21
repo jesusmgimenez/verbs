@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Verbs valencians</title>
-    <style>
+<style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; }
         .container { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 750px; }
         
@@ -32,12 +32,29 @@
         .btn-sol { background: #6c757d; color: white; }
         .btn-next { background: #28a745; color: white; }
         
-        /* Ajustes finales en la estética de observaciones */
-        #feedback-global { margin-top: 10px; padding: 8px; border-radius: 6px; text-align: left; font-weight: normal; display: none; font-size: 0.7em; line-height: 1.4; }
-        .ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; text-align: center !important; font-weight: bold; }
-        .err { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .obs-title { color: #0056b3; display: block; margin-bottom: 5px; text-decoration: none; font-weight: normal; }
+        /* Missatges de Feedback (Molt bé / Errors) */
+        #feedback-global { 
+            margin-top: 10px; 
+            padding: 10px; 
+            border-radius: 6px; 
+            text-align: center; 
+            font-weight: bold; 
+            display: none; 
+            font-size: 0.85em; 
+            line-height: 1.4; 
+        }
+        
+        .ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        
+        .err { 
+			background: #fff3cd; 
+			color: #856404; 
+			border: 1px solid #ffeeba; 
+		}
+        
+        .obs-title { color: #0056b3; display: block; margin-bottom: 5px; font-weight: bold; }
 
+        /* Selector de temps */
         .selector-wrapper { background: #fdfdfd; border-top: 1px solid #eee; padding-top: 10px; margin-top: 15px; }
         .titol-selector { font-weight: bold; margin-bottom: 8px; color: #007bff; display: block; font-size: 0.85em; text-align: center; }
         .grid-categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -46,6 +63,7 @@
         .opcio-temps { display: flex; align-items: center; justify-content: flex-start; gap: 4px; cursor: pointer; color: #444; font-size: 0.7em; margin-bottom: 3px; line-height: 1; text-align: left; }
         .opcio-temps input, .header-categoria input { margin: 0; width: 12px; height: 12px; flex: none; }
     </style>
+	
 </head>
 <body>
 
@@ -89,7 +107,13 @@
 </div>
 
 <script>
-    const catSimples = ["present (indicatiu)", "imperfet (indicatiu)", "passat simple (indicatiu)", "passat perifràstic (indicatiu)", "futur (indicatiu)", "condicional (indicatiu)", "present (subjuntiu)", "imperfet (subjuntiu)", "imperatiu"];
+    /* VERSIÓ: 1.0
+       NOTES: Memòria de sessió activada per a no repetir verbs encertats.
+    */
+	let tempsCompletats = []; // Guarda "Verb-Temps" (ex: "Abraçar-present (indicatiu)")
+    let fallatEnAquestTorn = false; // Ens diu si l'usuari s'ha equivocat o demanat ajuda
+	
+	const catSimples = ["present (indicatiu)", "imperfet (indicatiu)", "passat simple (indicatiu)", "passat perifràstic (indicatiu)", "futur (indicatiu)", "condicional (indicatiu)", "present (subjuntiu)", "imperfet (subjuntiu)", "imperatiu"];
     const catCompostos = ["perfet (indicatiu)", "plusquamperfet (indicatiu)", "passat anterior (indicatiu)", "passat anterior perifràstic (indicatiu)", "futur perfet (indicatiu)", "condicional perfet (indicatiu)", "perfet (subjuntiu)", "plusquamperfet (subjuntiu)"];
     const catNoPersonals = ["participi", "infinitiu", "gerundi"];
 
@@ -109,7 +133,7 @@
         return res;
     }
 
-const base = [
+	const base = [
     {
         n: "Abraçar",
         t: {
@@ -4760,7 +4784,7 @@ const base = [
             "Observacions": p("També pot presentar les formes següents:\n– En l'àmbit general: passat perifràstic: 2 vares véncer, 4 vàrem véncer, 5 vàreu véncer, 6 varen véncer; passat anterior perifràstic: 2 vares haver vençut, 4 vàrem haver vençut, 5 vàreu haver vençut, 6 varen haver vençut; present de subjuntiu: 4 vençam, 5 vençau; imperatiu: 4 vençam, 5 vençau.\n– En el valencià septentrional: present d'indicatiu: 1 venço.")
         }
     },
-];
+    ];
 
     const labelsPersonals = ["jo", "tu", "ell / ella / vosté", "nosaltres", "vosaltres", "ells / elles / vostés"];
     const labelsParticipi = ["Masc. Sing.", "Fem. Sing.", "Masc. Plur.", "Fem. Plur."];
@@ -4824,6 +4848,12 @@ const base = [
             
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
+                    // Si el botó "Comprova" està desactivat vol dir que ja hem acabat o demanat solucions
+                    if (document.getElementById('btn-check').disabled) {
+                        següent();
+                        return;
+                    }
+
                     const inputsHabilitats = Array.from(document.querySelectorAll('#inputs-area input:not([disabled])'));
                     const indexActual = inputsHabilitats.indexOf(input);
                     
@@ -4846,61 +4876,106 @@ const base = [
         }
     }
 
-    function següent() {
-        const checkboxes = document.querySelectorAll('.opcio-temps input:checked');
-        const seleccionats = Array.from(checkboxes).map(cb => cb.value.toLowerCase());
-        if (seleccionats.length === 0) {
-            alert("Seleccioneu almenys un temps verbal.");
-            return;
-        }
-        const vObj = base[Math.floor(Math.random() * base.length)];
-        currVerbFullObj = vObj;
-        const clausDisponibles = Object.keys(vObj.t).filter(k => seleccionats.includes(k.toLowerCase()));
-        if (clausDisponibles.length === 0) { següent(); return; }
-        const tKey = clausDisponibles[Math.floor(Math.random() * clausDisponibles.length)];
-        curr = { v: vObj.n, t: tKey, f: vObj.t[tKey] };
-        
-        document.getElementById('display-verb').textContent = curr.v;
-        document.getElementById('display-temps').textContent = curr.t;
-        document.getElementById('feedback-global').style.display = 'none';
-        
-        document.getElementById('btn-check').disabled = false;
-        document.getElementById('btn-sol').disabled = false;
+function següent() {
+    fallatEnAquestTorn = false; // Reiniciem el rastrejador d'errors per al nou verb
 
-        const nt = tKey.toLowerCase();
-        let tipus = nt.includes('participi') ? 'participi' : (nt.includes('infinitiu') || nt.includes('gerundi')) ? 'infinitiu' : 'personal';
-        generarInputs(tipus, curr.f.length);
+    const checkboxes = document.querySelectorAll('.opcio-temps input:checked');
+    const seleccionats = Array.from(checkboxes).map(cb => cb.value.toLowerCase());
+    
+    if (seleccionats.length === 0) {
+        alert("Seleccioneu almenys un temps verbal.");
+        return;
+    }
+
+    // CREEM UNA LLISTA DE POSSIBLES (Filtrant els que ja estan completats)
+    let opcionsDisponibles = [];
+    base.forEach(vObj => {
+        Object.keys(vObj.t).forEach(tKey => {
+            if (seleccionats.includes(tKey.toLowerCase()) && tKey !== "Observacions") {
+                const id = `${vObj.n}-${tKey}`;
+                if (!tempsCompletats.includes(id)) {
+                    opcionsDisponibles.push({ v: vObj, t: tKey });
+                }
+            }
+        });
+    });
+
+	// SI NO QUEDEN OPCIONS
+    if (opcionsDisponibles.length === 0) {
+        alert("🏆 Felicitats! Has completat tots els verbs d'esta selecció.");
+        tempsCompletats = []; 
+        següent(); 
+        return;
+    }
+
+    // TRIEM UNA OPCIÓ DE LES DISPONIBLES
+    const triat = opcionsDisponibles[Math.floor(Math.random() * opcionsDisponibles.length)];
+    currVerbFullObj = triat.v;
+    curr = { v: triat.v.n, t: triat.t, f: triat.v.t[triat.t] };
+    
+    document.getElementById('display-verb').textContent = curr.v;
+    document.getElementById('display-temps').textContent = curr.t;
+    document.getElementById('feedback-global').style.display = 'none';
+	document.getElementById('feedback-global').style.fontWeight = "normal";
+    document.getElementById('btn-check').disabled = false;
+    document.getElementById('btn-sol').disabled = false;
+
+    const nt = curr.t.toLowerCase();
+    let tipus = nt.includes('participi') ? 'participi' : (nt.includes('infinitiu') || nt.includes('gerundi')) ? 'infinitiu' : 'personal';
+    generarInputs(tipus, curr.f.length);
+    
+    for (let i = 0; i < (tipus === 'personal' ? 6 : curr.f.length); i++) {
+        const input = document.getElementById(`i${i}`);
+        if(input && (curr.f[i] === "-" || !curr.f[i])) { 
+            input.value = "-"; 
+            input.disabled = true; 
+        }
+    }
+    const primer = Array.from(document.querySelectorAll('input')).find(inp => !inp.disabled);
+    if (primer) primer.focus();
+}
+
+function verificar() {
+    let errCount = 0;
+    const inputs = document.querySelectorAll('#inputs-area input');
+    inputs.forEach((input, i) => {
+        if (input.disabled) return;
+        const user = limpiar(input.value);
+        const correcta = curr.f[i];
+        let ok = Array.isArray(correcta) ? correcta.some(c => limpiar(c) === user) : limpiar(correcta) === user;
+        input.style.borderColor = ok ? "#28a745" : "#dc3545";
+        if (!ok) errCount++;
+    });
+
+    const f = document.getElementById('feedback-global');
+    f.style.display = 'block';
+
+    if (errCount === 0) {
+        f.className = "ok";
+		f.style.fontWeight = "bold";
+        f.textContent = "Molt bé!";
+		f.style.textAlign = "center";
+		document.getElementById('btn-check').disabled = true; // Desactivem comprova per permetre l'Intro -> Següent
         
-        for (let i = 0; i < (tipus === 'personal' ? 6 : curr.f.length); i++) {
-            const input = document.getElementById(`i${i}`);
-            if(input && (curr.f[i] === "-" || !curr.f[i])) { 
-                input.value = "-"; 
-                input.disabled = true; 
+        // SI TOT ÉS CORRECTE: Comprovem si l'ha encertat a la primera
+        if (!fallatEnAquestTorn) {
+            const identificador = `${curr.v}-${curr.t}`;
+            if (!tempsCompletats.includes(identificador)) {
+                tempsCompletats.push(identificador);
             }
         }
-        const primer = Array.from(document.querySelectorAll('input')).find(inp => !inp.disabled);
-        if (primer) primer.focus();
+	} else {
+        f.className = "err";
+        f.style.textAlign = "center"; // Forcem el centrat per a aquest missatge
+        f.style.fontWeight = "bold";
+		f.textContent = "Hi ha errors.";
+        fallatEnAquestTorn = true;
     }
-
-    function verificar() {
-        let errCount = 0;
-        const inputs = document.querySelectorAll('#inputs-area input');
-        inputs.forEach((input, i) => {
-            if (input.disabled) return;
-            const user = limpiar(input.value);
-            const correcta = curr.f[i];
-            let ok = Array.isArray(correcta) ? correcta.some(c => limpiar(c) === user) : limpiar(correcta) === user;
-            input.style.borderColor = ok ? "#28a745" : "#dc3545";
-            if (!ok) errCount++;
-        });
-        const f = document.getElementById('feedback-global');
-        f.style.display = 'block';
-        f.className = errCount === 0 ? "ok" : "err";
-        f.textContent = errCount === 0 ? "Molt bé!" : "Hi ha errors.";
-    }
+}
 
     function mostrarSolucions() {
-        document.getElementById('btn-check').disabled = true;
+        fallatEnAquestTorn = true;
+		document.getElementById('btn-check').disabled = true;
         document.getElementById('btn-sol').disabled = true;
 
         const f = document.getElementById('feedback-global');
@@ -4927,17 +5002,24 @@ const base = [
         });
 
         if (errCount > 0 && currVerbFullObj.t.Observacions) {
-            f.style.display = 'block';
-            f.className = "err";
-            const obsText = Array.isArray(currVerbFullObj.t.Observacions) ? currVerbFullObj.t.Observacions.join("<br>") : currVerbFullObj.t.Observacions;
-            f.innerHTML = `<strong class="obs-title">Observacions:</strong><br>${obsText}`;
-        }
+        f.style.display = 'block';
+        f.className = "err";
+        f.style.textAlign = "left";      
+        f.style.fontSize = "0.7em";      
+        f.style.fontWeight = "normal";   
+        
+        const obsText = Array.isArray(currVerbFullObj.t.Observacions) ? currVerbFullObj.t.Observacions.join("<br>") : currVerbFullObj.t.Observacions;
+        
+        // El títol "Observacions:" en blau i discret
+        f.innerHTML = `<span class="obs-title" style="color: #0056b3; font-weight: normal;">Observacions:</span>${obsText}`;
+    }
     }
 
     window.onload = () => {
         inicialitzarSelector();
         següent();
     };
+	
 </script>
 </body>
 </html>
