@@ -129,8 +129,17 @@
     </div>
     <div id="feedback-global"></div>
 
+	<div class="selector-wrapper" style="border-top: 2px solid #007bff; background: #f8faff;">
+		<span class="titol-selector">Selector de conjugacions</span>
+		<div style="display: flex; justify-content: center; gap: 20px; padding: 10px; flex-wrap: wrap;">
+			<label class="opcio-temps"><input type="checkbox" class="check-conj" value="1" checked> 1a (-ar)</label>
+			<label class="opcio-temps"><input type="checkbox" class="check-conj" value="2" checked> 2a (-er/-re)</label>
+			<label class="opcio-temps"><input type="checkbox" class="check-conj" value="3" checked> 3a (-ir)</label>
+		</div>
+	</div>
+
     <div class="selector-wrapper">
-        <span class="titol-selector">Trieu els temps que vulgueu repassar:</span>
+        <span class="titol-selector">Selector de temps verbals</span>
         <div class="grid-categories">
             <div class="col-categoria">
                 <label class="header-categoria"><input type="checkbox" id="master-simples" checked onclick="toggleGrup(this, 'cat-simples')"> Simples</label>
@@ -155,15 +164,36 @@
 </div>
 
 <script>
-    /* VERSIÓ: 1.0
-       NOTES: Memòria de sessió activada per a no repetir verbs encertats.
-    */
-	let tempsCompletats = []; // Guarda "Verb-Temps" (ex: "Abraçar-present (indicatiu)")
+    let tempsCompletats = []; // Guarda "Verb-Temps" (ex: "Abraçar-present (indicatiu)")
     let fallatEnAquestTorn = false; // Ens diu si l'usuari s'ha equivocat o demanat ajuda
 	
 	const catSimples = ["present (indicatiu)", "imperfet (indicatiu)", "passat simple (indicatiu)", "passat perifràstic (indicatiu)", "futur (indicatiu)", "condicional (indicatiu)", "present (subjuntiu)", "imperfet (subjuntiu)", "imperatiu"];
     const catCompostos = ["perfet (indicatiu)", "plusquamperfet (indicatiu)", "passat anterior (indicatiu)", "passat anterior perifràstic (indicatiu)", "futur perfet (indicatiu)", "condicional perfet (indicatiu)", "perfet (subjuntiu)", "plusquamperfet (subjuntiu)"];
     const catNoPersonals = ["participi", "infinitiu", "gerundi"];
+
+	// Funció per assignar conjugació automàticament
+function asignarConjugacion(infinitivo) {
+    const v = infinitivo.toLowerCase().trim();
+
+    // 1. Primera conjugació
+    if (v.endsWith('ar')) return 1;
+
+    // 2. Segona conjugació:
+    // Acabats en -er, -re, -dur
+    // O el verb 'dir' i els seus compostos
+    // Fem servir una Expressió Regular per a 'dir' i els seus compostos
+    const esVerbDirOCompost = (v === 'dir' || v.endsWith('contradir') || v.endsWith('desdir') || v.endsWith('entredir') || v.endsWith('interdir') || v.endsWith('maldir') || v.endsWith('predir') || v.endsWith('redir'));
+
+    if (v.endsWith('er') || v.endsWith('re') || v.endsWith('dur') || esVerbDirOCompost) {
+        return 2;
+    }
+
+    // 3. Tercera conjugació:
+    // Acabats en -ir (que no han entrat en la regla anterior)
+    if (v.endsWith('ir')) return 3;
+
+    return 0;
+}
 
     function limpiar(str) {
         if (!str) return "";
@@ -3252,25 +3282,25 @@ const base = [
         n: "Omplir",
         t: {
             "present (indicatiu)": p("òmplic\nomplis\nompli\nomplim\nompliu\nomplin"),
-            "perfet (indicatiu)": p("he omplit\nhas omplit\nha omplit\nhem omplit\nheu omplit\nhan omplit"),
+            "perfet (indicatiu)": p("he omplit / he omplert\nhas omplit / ha omplert\nha omplit / ha omplert\nhem omplit / hem omplert\nheu omplit / heu omplert\nhan omplit / han omplert"),
             "imperfet (indicatiu)": p("omplia\nomplies\nomplia\nomplíem\nomplíeu\nomplien"),
-            "plusquamperfet (indicatiu)": p("havia omplit\nhavies omplit\nhavia omplit\nhavíem omplit\nhavíeu omplit\nhavien omplit"),
+            "plusquamperfet (indicatiu)": p("havia omplit / havia omplert\nhavies omplit / havies omplert\nhavia omplit / havia omplert\nhavíem omplit / havíem omplert\nhavíeu omplit / havíeu omplert\nhavien omplit / havien omplert"),
             "passat simple (indicatiu)": p("omplí\nomplires\nomplí\nomplírem\nomplíreu\nompliren"),
             "passat perifràstic (indicatiu)": p("vaig omplir\nvas omplir\nva omplir\nvam omplir\nvau omplir\nvan omplir"),
-            "passat anterior (indicatiu)": p("haguí omplit\nhagueres omplit\nhagué omplit\nhaguérem omplit\nhaguéreu omplit\nhagueren omplit"),
-            "passat anterior perifràstic (indicatiu)": p("vaig haver omplit\nvas haver omplit\nva haver omplit\nvam haver omplit\nvau haver omplit\nvan haver omplit"),
+            "passat anterior (indicatiu)": p("haguí omplit / haguí omplert\nhagueres omplit / hagueres omplert\nhagué omplit / hagué omplert\nhaguérem omplit / haguérem omplert\nhaguéreu omplit / haguéreu omplert\nhagueren omplit / hagueren omplert"),
+            "passat anterior perifràstic (indicatiu)": p("vaig haver omplit / vaig haver omplert\nvas haver omplit / vas haver omplert\nva haver omplit / va haver omplert\nvam haver omplit / vam haver omplert\nvau haver omplit / vau haver omplert\nvan haver omplit / van haver omplert"),
             "futur (indicatiu)": p("ompliré\nompliràs\nomplirà\nomplirem\nomplireu\nompliran"),
-            "futur perfet (indicatiu)": p("hauré omplit\nhauràs omplit\nhaurà omplit\nhaurem omplit\nhaureu omplit\nhauran omplit"),
+            "futur perfet (indicatiu)": p("hauré omplit / hauré omplert\nhauràs omplit / hauràs omplert\nhaurà omplit / haurà omplert\nhaurem omplit / haurem omplert\nhaureu omplit / haureu omplert\nhauran omplit / hauran omplert"),
             "condicional (indicatiu)": p("ompliria\nompliries\nompliria\nompliríem\nompliríeu\nomplirien"),
-            "condicional perfet (indicatiu)": p("hauria omplit\nhauries omplit\nhauria omplit\nhauríem omplit\nhauríeu omplit\nhaurien omplit"),
+            "condicional perfet (indicatiu)": p("hauria omplit / hauria omplert\nhauries omplit / hauries omplert\nhauria omplit / hauria omplert\nhauríem omplit / hauríem omplert\nhauríeu omplit / hauríeu omplert\nhaurien omplit / haurien omplert"),
             "present (subjuntiu)": p("òmpliga\nòmpligues\nòmpliga\nomplim\nompliu\nòmpliguen"),
-            "perfet (subjuntiu)": p("haja omplit\nhages omplit\nhaja omplit\nhàgem omplit\nhàgeu omplit\nhagen omplit"),
+            "perfet (subjuntiu)": p("haja omplit / haja omplert\nhages omplit / hages omplert\nhaja omplit / haja omplert\nhàgem omplit / hàgem omplert\nhàgeu omplit / hàgeu omplert\nhagen omplit / hagen omplert"),
             "imperfet (subjuntiu)": p("omplira/omplís\nomplires/omplisses\nomplira/omplís\nomplírem/omplíssem\nomplíreu/omplísseu\nompliren/omplissen"),
             "plusquamperfet (subjuntiu)": p("haguera omplit / hagués omplit\nhagueres omplit / haguesses omplit\nhaguera omplit / hagués omplit\nhaguérem omplit / haguéssem omplit\nhaguéreu omplit / haguésseu omplit\nhagueren omplit / haguessen omplit"),
             "imperatiu": p("-\nompli\nòmpliga\nomplim\nompliu\nòmpliguen"),
             "participi": p("omplit / omplert\nomplida / omplerta\nomplits / omplerts\nomplides / omplertes"),
-            "infinitiu": p("omplir\nhaver omplit"),
-            "gerundi": p("omplint\nhavent omplit"),
+            "infinitiu": p("omplir\nhaver omplit / haver omplert"),
+            "gerundi": p("omplint\nhavent omplit / havent omplert"),
             "Observacions": p("També pot presentar les formes següents:\n– En l'àmbit general: passat perifràstic: 2 vares omplir, 4 vàrem omplir, 5 vàreu omplir, 6 varen omplir; passat anterior perifràstic: 2 vares haver omplit, 4 vàrem haver omplit, 5 vàreu haver omplit, 6 varen haver omplit; participi: omplert, omplerta, omplerts, omplertes.\n– En el valencià septentrional: present d'indicatiu: 1 omplo.")
         }
     },
@@ -3445,11 +3475,11 @@ const base = [
             "futur perfet (indicatiu)": p("hauré pertangut\nhauràs pertangut\nhaurà pertangut\nhaurem pertangut\nhaureu pertangut\nhauran pertangut"),
             "condicional (indicatiu)": p("pertanyeria\npertanyeries\npertanyeria\npertanyeríem\npertanyeríeu\npertanyerien"),
             "condicional perfet (indicatiu)": p("hauria pertangut\nhauries pertangut\nhauria pertangut\nhauríem pertangut\nhauríeu pertangut\nhaurien pertangut"),
-            "present (subjuntiu)": p("pertanga / pertanya\npertangues / pertanyes\npertanga / pertanya\npertanguem / pertangam / pertanyem\npertangueu / pertangau / pertanyeu\npertanguen / / pertanyen"),
+            "present (subjuntiu)": p("pertanga / pertanya\npertangues / pertanyes\npertanga / pertanya\npertanguem / pertangam / pertanyem\npertangueu / pertangau / pertanyeu\npertanguen / pertanyen"),
             "perfet (subjuntiu)": p("haja pertangut\nhages pertangut\nhaja pertangut\nhàgem pertangut\nhàgeu pertangut\nhagen pertangut"),
             "imperfet (subjuntiu)": p("pertanguera/pertangués / pertanyera/pertanyés\npertangueres/pertanguesses / pertanyeres/pertanyesses\npertanguera/pertangués /  pertanyera/pertanyés\npertanguérem/pertanguéssem / pertanyérem/pertanyéssem\npertanguéreu/pertanguésseu / pertanyéreu/pertanyésseu\npertangueren/pertanguessen / pertanyeren/pertanyessen"),
             "plusquamperfet (subjuntiu)": p("haguera pertangut / hagués pertangut\nhagueres pertangut / haguesses pertangut\nhaguera pertangut / hagués pertangut\nhaguérem pertangut / haguéssem pertangut\nhaguéreu pertangut / haguésseu pertangut\nhagueren pertangut / haguessen pertangut"),
-            "imperatiu": p("-\npertany\npertanga / pertanya\npertanguem / pertangam / pertanyem\npertanyeu\npertanguen / / pertanyen"),
+            "imperatiu": p("-\npertany\npertanga / pertanya\npertanguem / pertangam / pertanyem\npertanyeu\npertanguen / pertanyen"),
             "participi": p("pertangut / pertanyut\npertanguda / pertanyuda\npertanguts / pertanyuts\npertangudes / pertanyudes"),
             "infinitiu": p("pertànyer\nhaver pertangut"),
             "gerundi": p("pertanyent\nhavent pertangut"),
@@ -4884,7 +4914,7 @@ const base = [
             "Observacions": p("També pot presentar les formes següents en l'àmbit general: passat perifràstic: 2 vares absoldre, 4 vàrem absoldre, 5 vàreu absoldre, 6 varen absoldre; passat anterior perifràstic: 2 vares haver absolt, 4 vàrem haver absolt, 5 vàreu haver absolt, 6 varen haver absolt; present de subjuntiu: 4 absolgam, 5 absolgau; imperatiu: 4 absolgam.")
         }
     },
-	{
+	    {
         n: "Asseure",
         t: {
             "present (indicatiu)": p("assec\nasseus\nasseu\nasseiem/asseem\nasseieu/asseeu\nasseuen"),
@@ -5393,30 +5423,37 @@ const base = [
     }
 
 function següent() {
-    fallatEnAquestTorn = false; // Reiniciem el rastrejador d'errors per al nou verb
+    fallatEnAquestTorn = false;
 
-    const checkboxes = document.querySelectorAll('.opcio-temps input:checked');
-    const seleccionats = Array.from(checkboxes).map(cb => cb.value.toLowerCase());
+    // 1. Obtenir temps seleccionats
+    const checkboxesTemps = document.querySelectorAll('.opcio-temps input:checked:not(.check-conj)');
+    const seleccionats = Array.from(checkboxesTemps).map(cb => cb.value.toLowerCase());
+
+    // 2. Obtenir conjugacions seleccionades
+    const checkboxesConj = document.querySelectorAll('.check-conj:checked');
+    const conjSeleccionades = Array.from(checkboxesConj).map(cb => parseInt(cb.value));
     
-    if (seleccionats.length === 0) {
-        alert("Seleccioneu almenys un temps verbal.");
+    if (seleccionats.length === 0 || conjSeleccionades.length === 0) {
+        alert("Seleccioneu almenys un temps i una conjugació.");
         return;
     }
 
-    // CREEM UNA LLISTA DE POSSIBLES (Filtrant els que ja estan completats)
+    // 3. Filtrar per temps i conjugació
     let opcionsDisponibles = [];
     base.forEach(vObj => {
-        Object.keys(vObj.t).forEach(tKey => {
-            if (seleccionats.includes(tKey.toLowerCase()) && tKey !== "Observacions") {
-                const id = `${vObj.n}-${tKey}`;
-                if (!tempsCompletats.includes(id)) {
-                    opcionsDisponibles.push({ v: vObj, t: tKey });
+        // Apliquem el filtre de conjugació
+        if (conjSeleccionades.includes(vObj.c)) {
+            Object.keys(vObj.t).forEach(tKey => {
+                if (seleccionats.includes(tKey.toLowerCase()) && tKey !== "Observacions") {
+                    const id = `${vObj.n}-${tKey}`;
+                    if (!tempsCompletats.includes(id)) {
+                        opcionsDisponibles.push({ v: vObj, t: tKey });
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
-	// SI NO QUEDEN OPCIONS
     if (opcionsDisponibles.length === 0) {
         alert("🏆 Felicitats! Has completat tots els verbs d'esta selecció.");
         tempsCompletats = []; 
@@ -5424,7 +5461,6 @@ function següent() {
         return;
     }
 
-    // TRIEM UNA OPCIÓ DE LES DISPONIBLES
     const triat = opcionsDisponibles[Math.floor(Math.random() * opcionsDisponibles.length)];
     currVerbFullObj = triat.v;
     curr = { v: triat.v.n, t: triat.t, f: triat.v.t[triat.t] };
@@ -5432,7 +5468,7 @@ function següent() {
     document.getElementById('display-verb').textContent = curr.v;
     document.getElementById('display-temps').textContent = curr.t;
     document.getElementById('feedback-global').style.display = 'none';
-	document.getElementById('feedback-global').style.fontWeight = "normal";
+    document.getElementById('feedback-global').style.fontWeight = "normal";
     document.getElementById('btn-check').disabled = false;
     document.getElementById('btn-sol').disabled = false;
 
@@ -5531,10 +5567,14 @@ function verificar() {
     }
     }
 
-    window.onload = () => {
-        inicialitzarSelector();
-        següent();
-    };
+	window.onload = () => {
+		base.forEach(vObj => {
+			vObj.c = asignarConjugacion(vObj.n);
+		});
+		
+		inicialitzarSelector();
+		següent();
+	};
 	
 </script>
 </body>
